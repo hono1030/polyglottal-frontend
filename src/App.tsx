@@ -23,6 +23,15 @@ function App() {
   const [message, setMessage] = useState<MessageType[]>([]);
   const [messages, setMessages] = useState<MessageType[]>([]);
 
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (!user) return;
 
@@ -95,7 +104,7 @@ function App() {
             setMessages={setMessages}
           ></DeleteMessages>
           <div className="chat-container">
-            <div className="chat">
+            <div className="chat" ref={chatContainerRef}>
               {messages.map((value, index) => {
                 if (value.clientId === clientId) {
                   return (
