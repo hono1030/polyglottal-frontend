@@ -24,33 +24,32 @@ function App() {
   const [messages, setMessages] = useState<MessageType[]>([]);
 
   useEffect(() => {
+    if (!user) return;
+
     const url = `${wsUrl}/ws/${user}/${clientId}`;
     const ws = new WebSocket(url);
 
-    if (user) {
-      getAllMessages();
-      ws.onopen = () => {
-        // ws.send("Connect");
-        ws.send(`${user} joined the chat`);
-        console.log("WebScoket connection established");
-      };
-
-      // recieve message every start page
-      ws.onmessage = (e) => {
-        const message = JSON.parse(e.data);
-        setMessages((prevMessages) => [...prevMessages, message]);
-      };
-
-      ws.onclose = () => {
-        console.log("WebSocket connection closed");
-      };
-
+    getAllMessages();
+    ws.onopen = () => {
       setWebsocket(ws);
-      // clean up function when we close page
-      return () => {
-        ws.close();
-      };
-    }
+      ws.send(`${user} joined the chat`);
+      console.log("WebScoket connection established");
+    };
+
+    // recieve message every start page
+    ws.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    // clean up function when we close page
+    return () => {
+      ws.close();
+    };
   }, [user]);
 
   const sendMessages = () => {
@@ -59,6 +58,7 @@ function App() {
       setMessage([]);
     } else {
       console.error("WebSocket is not open");
+      setTimeout(sendMessages, 100); // Retry after a short delay
     }
   };
 
