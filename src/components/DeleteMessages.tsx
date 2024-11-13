@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, ReactNode } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "../App.css";
 const apiUrl: string = import.meta.env.VITE_API_URL;
 
 type Props = {
-  setMessage: (message: []) => void;
+  setMessage: (message: string) => void;
   setMessages: (message: []) => void;
 };
 
@@ -16,7 +16,7 @@ const DeleteMessages: React.FC<Props> = ({ setMessage, setMessages }) => {
       const response = await axios.delete(`${apiUrl}/database`);
 
       if (response.status == 200) {
-        setMessage([]);
+        setMessage("");
         setMessages([]);
         setDelTask(false);
       }
@@ -27,17 +27,6 @@ const DeleteMessages: React.FC<Props> = ({ setMessage, setMessages }) => {
 
   const handleConfirmationBox = () => {
     setDelTask(!delTask);
-    // if (!delTask) {
-    //     document.querySelector(".confirm-bg").style.display = "flex";
-    //     document.querySelector(".confirmation-container").style.display = "flex";
-
-    //   setDelTask(true);
-    // } else {
-    //     document.querySelector(".confirm-bg").style.display = "none";
-    //     document.querySelector(".confirmation-container").style.display = "none";
-
-    //   setDelTask(false);
-    // }
   };
 
   return (

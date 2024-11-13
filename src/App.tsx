@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import "./App.css";
 import "./components/Login";
 import Login from "./components/Login";
@@ -20,7 +20,7 @@ function App() {
   );
   const [user, setUser] = useState<string | null>(null);
   const [websocket, setWebsocket] = useState<WebSocket>();
-  const [message, setMessage] = useState<MessageType[]>([]);
+  const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageType[]>([]);
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +64,7 @@ function App() {
   const sendMessages = () => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(message);
-      setMessage([]);
+      setMessage("");
     } else {
       console.error("WebSocket is not open");
       setTimeout(sendMessages, 100); // Retry after a short delay
