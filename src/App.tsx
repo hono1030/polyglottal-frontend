@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "./components/Login";
 import Login from "./components/Login";
@@ -15,6 +15,7 @@ type MessageType = {
 };
 
 function App() {
+  // @ts-ignore
   const [clientId, setClientId] = useState<number>(
     Math.floor(new Date().getTime() / 1000)
   );
@@ -67,7 +68,7 @@ function App() {
       setMessage("");
     } else {
       console.error("WebSocket is not open");
-      setTimeout(sendMessages, 100); // Retry after a short delay
+      // setTimeout(sendMessages, 100); // Retry after a short delay
     }
   };
 
