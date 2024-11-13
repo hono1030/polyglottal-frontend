@@ -2,22 +2,33 @@ import React, { useState, useEffect, useRef, ReactNode } from "react";
 import "./App.css";
 import "./components/Login";
 import Login from "./components/Login";
+import DeleteMessages from "./components/DeleteMessages";
+import axios from "axios";
+const apiUrl: string = import.meta.env.VITE_API_URL;
 const wsUrl: string = import.meta.env.VITE_WS_URL;
 
+type MessageType = {
+  time: string;
+  clientId: number;
+  username: string;
+  message: string;
+};
+
 function App() {
-  const [clientId, setClientId] = useState<ReactNode>(
+  const [clientId, setClientId] = useState<number>(
     Math.floor(new Date().getTime() / 1000)
   );
   const [user, setUser] = useState<string | null>(null);
   const [websocket, setWebsocket] = useState<WebSocket>();
-  const [message, setMessage] = useState<object[]>([]);
-  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState<MessageType[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   useEffect(() => {
     const url = `${wsUrl}/ws/${user}/${clientId}`;
     const ws = new WebSocket(url);
 
     if (user) {
+      getAllMessages();
       ws.onopen = () => {
         // ws.send("Connect");
         ws.send(`${user} joined the chat`);
@@ -40,7 +51,7 @@ function App() {
         ws.close();
       };
     }
-  }, [user, clientId]);
+  }, [user]);
 
   const sendMessages = () => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -51,15 +62,38 @@ function App() {
     }
   };
 
+  const getAllMessages = async () => {
+    if (user) {
+      try {
+        const response = await axios.get(`${apiUrl}/database`);
+        const messages = response.data;
+        setMessages(messages);
+        console.log(messages);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getAllMessages();
+    }
+  }, [user]);
+
   return (
     <div className="container">
-      <h1>Chat</h1>
+      <h1>CC36 Secret Chat Room</h1>
 
       {!user ? (
         <Login setUser={setUser}></Login>
       ) : (
         <>
           <h2>Your username: {user}</h2>
+          <DeleteMessages
+            setMessage={setMessage}
+            setMessages={setMessages}
+          ></DeleteMessages>
           <div className="chat-container">
             <div className="chat">
               {messages.map((value, index) => {
